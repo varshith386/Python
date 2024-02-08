@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Data Presentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js library -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .data-container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .human-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .chart-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="data-container">
+        <div class="human-icon">👤</div> <!-- Human icon -->
+        <h2>Student Performance Scores</h2>
+        <!-- Include the div that will hold the pie chart -->
+        <div class="chart-container">
+            <canvas id="scoresChart"></canvas>
+        </div>
+        <!-- Advice to reduce anger -->
+        <p id="advice" style="font-size: 14px; color: grey; margin-top: 20px;"></p>
+        <!-- Refresh button -->
+        <button id="refreshButton">Refresh</button>
+    </div>
+    <script>
+        // Function to update the chart and advice
+        function updateChartAndAdvice(data) {
+            // Update the pie chart
+            const dataObject = {
+                labels: ['Math Score', 'Reading Score', 'Writing Score'],
+                datasets: [{
+                    label: 'Student Scores',
+                    data: data.scores,
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const config = {
+                type: 'pie',
+                data: dataObject,
+                options: {
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    }
+                }
+            };
+
+            const scoresChart = new Chart(document.getElementById('scoresChart'), config);
+
+            // Update the advice
+            document.getElementById('advice').textContent = data.advice;
+        }
+
+        // Function to handle manual refresh
+        function refreshData() {
+            // Send a request to the server to get the latest data
+            // Replace 'getLatestData()' with the actual function or WebSocket code to get the latest data
+            const latestData = getLatestData();
+            updateChartAndAdvice(latestData);
+        }
+
+        // Initially, update the chart and advice with dummy data
+        const initialData = {
+            scores: [0, 0, 0],
+            advice: ""
+        };
+        updateChartAndAdvice(initialData);
+
+        // WebSocket setup to receive data
+        const socket = new WebSocket('ws://localhost:9004');
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateChartAndAdvice(data);
+        };
+
+        // Add click event listener to the refresh button
+        document.getElementById('refreshButton').addEventListener('click', refreshData);
+    </script>
+</body>
+</html>

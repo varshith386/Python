@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Page</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .bg-image {
+            background-image: url("building.jpg");
+            filter: blur(1px);
+            -webkit-filter: blur(4px);
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        input[type="text"] {
+            width: 50%;
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+            border: none;
+            background: #f1f1f1;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 20%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .table-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #humanIcon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 48px;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <img id="humanIcon" alt="Human Icon" aria-label="Human emoji" role="img">👤</img>
+
+    <div class="bg-image"></div>
+
+    <div class="container">
+        <input type="text" placeholder="Type here..." id="inputField">
+        <button id="goButton">Go</button>
+        <button id="showTableButton">Show Table</button>
+
+        <div class="table-container" id="tableContainer">
+            <table>
+                <tr>
+                    <th>Gender</th>
+                    <th>Class</th>
+                    <th>PLE</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                    <th>T1</th>
+                    <th>T2</th>
+                    <th>T3</th>
+                </tr>
+                <!-- Rows will be added here dynamically -->
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("goButton").addEventListener("click", function() {
+            var input = document.getElementById("inputField").value;
+            fetch('http://localhost:8000/teachers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: input })
+            })
+            .catch((error) => console.error('Error:', error));
+        });
+
+        var tableData = [];
+
+        function connectWebSocket() {
+    var ws = new WebSocket("ws://127.0.0.1:9001/");
+
+    ws.onopen = function() {
+        console.log("Connected to WebSocket server on port 9001");
+    };
+
+    ws.onmessage = function(event) {
+        if (!event.data) {
+            console.error("Empty response received from the server.");
+            return;
+        }
+
+        try {
+            var responseData = JSON.parse(event.data);
+            console.log("Parsed JSON data: ", responseData);
+            // Handle the parsed data...
+        } catch (e) {
+            console.error("Error parsing JSON: ", e);
+            console.log("Raw data received: ", event.data);
+        }
+    };
+
+    ws.onclose = function() {
+        console.log('WebSocket connection closed. Attempting to reconnect...');
+        setTimeout(connectWebSocket, 3000);
+    };
+
+    ws.onerror = function(error) {
+        console.error('WebSocket error:', error);
+        ws.close();
+    };
+}
+
+
+        function updateTable() {
+            var table = document.getElementById("tableContainer").getElementsByTagName("table")[0];
+            
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            tableData.forEach(rowData => {
+                var row = table.insertRow(-1);
+                rowData.forEach(cellData => {
+                    var cell = row.insertCell();
+                    cell.textContent = cellData;
+                });
+            });
+        }
+
+        document.getElementById("showTableButton").addEventListener("click", function() {
+            var tableContainer = document.getElementById("tableContainer");
+            if (tableContainer.style.display === "none") {
+                updateTable();
+                tableContainer.style.display = "block";
+            } else {
+                tableContainer.style.display = "none";
+            }
+        });
+
+        connectWebSocket();
+    </script>
+
+</body>
+</html>

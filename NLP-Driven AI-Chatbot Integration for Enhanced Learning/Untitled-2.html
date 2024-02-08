@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Message Sender</title>
+    <style>
+        body {
+            background-image: url('building.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #messageForm {
+            margin-top: 20px;
+        }
+
+        #message {
+            padding: 8px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease-in-out;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding-left: 10px;
+        }
+
+        #message:focus {
+            border-color: #0056b3;
+        }
+
+        #sendButton {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        #sendButton:hover {
+            background-color: #0056b3;
+        }
+
+        #receivedMessage {
+            color: #fff;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #receivedMessage p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Send a Message</h1>
+    <form id="messageForm">
+        <input type="text" id="message" placeholder="Enter a Message">
+        <input type="button" value="Go" id="sendButton">
+    </form>
+
+    <div id="receivedMessage"></div>
+
+    <script>
+        const messageInput = document.getElementById('message');
+        const sendButton = document.getElementById('sendButton');
+        const receivedMessageDisplay = document.getElementById('receivedMessage');
+    
+        // Create a WebSocket connection to the Python server
+        const socket = new WebSocket('ws://localhost:9001');
+    
+        socket.addEventListener('message', (event) => {
+            const receivedMessage = JSON.parse(event.data); // Parse the JSON message
+            const user_input = receivedMessage.user_input;
+            const query_result = receivedMessage.query_result;
+    
+            // Display the received message
+            receivedMessageDisplay.innerHTML += `<p>User Input: ${user_input}</p>`;
+            receivedMessageDisplay.innerHTML += `<p>Query Result: ${query_result}</p>`;
+        });
+    
+        sendButton.addEventListener('click', function() {
+            const message = messageInput.value;
+    
+            // Send the message to port 8000/teachers
+            fetch('http://localhost:8000/teachers', {
+                method: 'POST',
+                body: JSON.stringify({ "message": message }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    console.log('Message sent successfully');
+                    messageInput.value = ''; // Clear the input field
+                } else {
+                    console.error('Error sending message:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
+        });
+    </script>
+</body>
+</html>

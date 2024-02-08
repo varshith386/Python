@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Interface with Background Image</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+  body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: #121212 url('wall.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 4rem; /* Increased padding to make the card appear bigger */
+    backdrop-filter: blur(10px);
+    text-align: center;
+    width: 90%; /* Increased width */
+    max-width: 1000px; /* Adjusted maximum width for an even larger card */
+    box-sizing: border-box;
+    overflow: auto;
+    transition: transform 0.3s ease;
+  }
+  .glass-card:hover {
+    transform: scale(1.02);
+  }
+  .glass-card h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+  .input-group {
+    width: 400px; /* Set a fixed width for the input group */
+    margin: 0 auto; /* Center the input group */
+  }
+  .input-group input, .send-button {
+    border: none;
+    padding: 1rem;
+    width: 100%; /* Input and button take full width of the input group */
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .input-group input {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: none;
+    outline: none;
+    margin-bottom: 1rem; /* Add back the margin for spacing */
+  }
+  .input-group input:focus {
+    box-shadow: 0 0 0 2px #0af;
+    transform: scale(1.05);
+  }
+  .send-button {
+    background: #0af;
+    color: white;
+    cursor: pointer;
+    display: block; /* Change to block to allow margin auto to center the button */
+    margin: 1rem auto 0; /* Center the button horizontally */
+    box-shadow: none;
+  }
+  .send-button i {
+    margin-right: 0.5rem;
+  }
+  .send-button:hover, .send-button:focus {
+    background: #08e;
+    box-shadow: 0 0 0 2px #08e;
+    transform: translateY(-2px);
+  }
+</style>
+<script>
+  const socket = new WebSocket('ws://localhost:9002');
+
+  socket.addEventListener('message', (event) => {
+    const receivedMessage = event.data;
+    const messageElement = document.createElement('div');
+    messageElement.textContent = receivedMessage;
+    document.getElementById('messageContainer').appendChild(messageElement);
+  });
+
+  function sendMessage(event) {
+    event.preventDefault(); // Prevent the default form submit action
+    const userInput = document.getElementById('userMessage').value;
+
+    // Perform the POST request using Fetch API to send to localhost:8000/stu
+    fetch('http://localhost:8000/stu', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: userInput })
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      // Handle errors here, such as displaying an error message to the user
+    });
+
+    // Clear the input field
+    document.getElementById('userMessage').value = '';
+  }
+</script>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="message-container" id="messageContainer"></div>
+    <form onsubmit="sendMessage(event)">
+      <div class="input-group">
+        <input type="text" id="userMessage" placeholder="Type your message...">
+        <button type="submit" class="send-button"><i>&#9993;</i> Send</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
