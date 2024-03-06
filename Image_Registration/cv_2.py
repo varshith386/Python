@@ -7,7 +7,10 @@ from skimage import io
 import imageio
 import matplotlib.pyplot as plt
 from skimage.metrics import structural_similarity as ssim
+import time
 
+
+start_time = time.time()
 def create_transform_matrix(displacement):
     transform_matrix = np.eye(3)
 
@@ -22,12 +25,12 @@ def create_transform_matrix(displacement):
     return transform_matrix
 
 # Loading images
-image_folder = r'C:\Users\hp\OneDrive\Desktop\data\div-images\train'
+image_folder = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train'
 im_folder2= ""
 image1_path = os.path.join(image_folder, '004.png')
 image1 = io.imread(image1_path, as_gray=True).astype(np.uint8)
-image_1_path = r"C:\Users\hp\OneDrive\Desktop\out6_a\aligned_frame_0_optical_flow.png"
-image_2_path = r"C:\Users\hp\OneDrive\Desktop\out6_a\aligned_frame_56_optical_flow.png"
+image_1_path = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6_a\aligned_frame_0_optical_flow.png"
+image_2_path = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6_a\aligned_frame_41_optical_flow.png"
 image_1 = io.imread(image_1_path, as_gray=True).astype(np.uint8)
 image_2 = io.imread(image_2_path, as_gray=True).astype(np.uint8)
 
@@ -38,10 +41,10 @@ image_files = sorted([os.path.join(image_folder, file) for file in os.listdir(im
 image_list = [io.imread(filename) for filename in image_files]
 
 # Output directory
-output_path = r'C:\Users\hp\OneDrive\Desktop\Pyhton\images\out6_a.png'
+output_path = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6_a.png'
 imageio.mimwrite(output_path, image_list, duration=0.1)
 #out directory
-output_aligned_directory = r'C:\Users\hp\OneDrive\Desktop\out6_a'
+output_aligned_directory = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6_a'
 
 
 # Use the first image as the reference
@@ -197,7 +200,7 @@ def plot_images2a(reference_img, registered_img, mean_img):
 
     # Plot the registered image
     plt.subplot(1, 3, 2)
-    registered_imgpath=r"C:\Users\hp\OneDrive\Desktop\out6_a\aligned_frame_56_optical_flow.png"
+    registered_imgpath=r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6_a\aligned_frame_41_optical_flow.png"
     registered_img = io.imread(registered_imgpath, as_gray=True).astype(np.uint8)
     plt.imshow(registered_img, cmap='gray')
     plt.title('Registered Image')
@@ -233,3 +236,8 @@ print_evaluation_metrics2a(mae_, mse_value_msr, euclidean_distance_msr, calculat
 
 # Call the plot function after processing all frames
 plot_images2a(reference_frame_gray, displaced_frame, mean_registered_image)
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"Time taken to run the code: {elapsed_time} seconds")

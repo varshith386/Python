@@ -10,8 +10,13 @@ import numpy as np
 import os
 from skimage.transform import resize
 
+import time
+
+
+start_time = time.time()
+
 # Loading images to train model
-image_folder = r'C:\Users\hp\OneDrive\Desktop\data\div-images\train'
+image_folder = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train'
 im_folder2= ""
 image1_path = os.path.join(image_folder, '004.png')
 image1 = io.imread(image1_path, as_gray=True).astype(np.uint8)
@@ -38,8 +43,8 @@ image_list = [io.imread(filename, as_gray=True).astype(np.uint8) for filename in
 output_path = r'C:\Users\hp\OneDrive\Desktop\Pyhton\images\out5_a.png'
 imageio.mimwrite(output_path, image_list, duration=0.1)
 #out directory
-output_aligned_directory = r'C:\Users\hp\OneDrive\Desktop\out5_a'
-output_aligned_directory1 = r'C:\Users\hp\OneDrive\Desktop\out6'
+output_aligned_directory = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out5_a"
+output_aligned_directory1 = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6'
 
 os.makedirs(output_aligned_directory, exist_ok=True)
 
@@ -54,7 +59,7 @@ out_previous = sr.register_transform_stack(img_stack, reference='previous')
 out_previous_uint8 = (out_previous * 255).astype(np.uint8)
 
 # Loading ref img
-ref_img_path = r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\004.png"
+ref_img_path = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\004.png"
 ref_img = io.imread(ref_img_path)
 
 for i, aligned_frame in enumerate(out_previous_uint8):
@@ -77,8 +82,8 @@ def iou(image1, image2):
     iou_value = intersection / union
     return iou_value
 
-image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\004.png", as_gray=True)
-image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\064.png", as_gray=True)
+image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\004.png", as_gray=True)
+image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\006.png", as_gray=True)
 
 def sad(image1, image2):
 
@@ -93,8 +98,8 @@ def sad(image1, image2):
 
 def mse(image1, image2):
     # Ensure the images have the same shape
-    image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\004.png", as_gray=True)
-    image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\064.png", as_gray=True)
+    image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\004.png", as_gray=True)
+    image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\006.png", as_gray=True)
 
     min_height = min(image1.shape[0], image2.shape[0])
     min_width = min(image1.shape[1], image2.shape[1])
@@ -108,8 +113,9 @@ def mse(image1, image2):
 
 def print_evaluation_metrics1a(tversky_value, sad, euclidean_distance, mse_value):
     
-    image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\004.png", as_gray=True)
-    image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\data\div-images\train\064.png", as_gray=True)
+    image1 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\004.png", as_gray=True)
+    image2 = io.imread(r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\data\div-images\train\006.png", as_gray=True)
+
     iou_value = iou(image1, image2)
     
     print("------------------Dataset-2------------------")
@@ -155,3 +161,8 @@ mse_val = mse(binary_mean, binary_ref_img)
 
 print_evaluation_metrics1a(iou_value_, sad_, euclidean_dist, mse_val)
 plot_images1a(ref_img, out_previous_uint8[0], out_previous_uint8.mean(axis=0))
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"Time taken to run the code: {elapsed_time} seconds")

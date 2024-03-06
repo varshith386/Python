@@ -3,6 +3,11 @@ from skimage import io
 import imageio
 import os
 import matplotlib.pyplot as plt
+import time
+
+
+start_time = time.time()
+
 
 def fft_registration(fixed_image, moving_image, central_weight=2.0):
     # Compute the cross-correlation in the frequency domain using FFT
@@ -45,8 +50,8 @@ def register_images(fixed_image, moving_images, output_directory, central_weight
     return aligned_images
 
 # Load images
-image_folder = r'C:\Users\hp\OneDrive\Desktop\train'
-output_aligned_directory1 = r'C:\Users\hp\OneDrive\Desktop\out7'
+image_folder = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Input\train'
+output_aligned_directory1 = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6"
 
 image_files = sorted([os.path.join(image_folder, file) for file in os.listdir(image_folder) if file.endswith('.png')])
 
@@ -145,3 +150,8 @@ mse_value = mse(binary_mean, binary_ref_img)
 
 print_evaluation_metrics3(o_measure, J_measure, euclidean_distance, mse_value)
 plot_images3(fixed_image, aligned_images[1], mean_aligned_image, central_weights[2])
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"Time taken to run the code: {elapsed_time} seconds")

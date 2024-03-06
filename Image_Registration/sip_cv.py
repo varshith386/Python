@@ -7,6 +7,11 @@ from skimage import io
 import imageio
 import matplotlib.pyplot as plt
 
+import time
+
+
+start_time = time.time()
+
 def create_transform_matrix(displacement):
     transform_matrix = np.eye(3)
 
@@ -21,14 +26,14 @@ def create_transform_matrix(displacement):
     return transform_matrix
 
 # Loading images
-image_folder = r'C:\Users\hp\OneDrive\Desktop\train'
+image_folder = r'C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Input\train'
 image_files = sorted([os.path.join(image_folder, file) for file in os.listdir(image_folder) if file.endswith('.png')])
 
 # Create a list to store images
 image_list = [io.imread(filename) for filename in image_files]
 
 # Output directory
-output_aligned_directory = r'C:\Users\hp\OneDrive\Desktop\out6'
+output_aligned_directory = r"C:\Users\hp\OneDrive\Desktop\College\sip_endsem\Output\out6"
 os.makedirs(output_aligned_directory, exist_ok=True)
 
 
@@ -163,3 +168,8 @@ print_evaluation_metrics2(o_msr, J_msr, euclidean_distance_msr, mse_value_msr)
 
 # Call the plot function after processing all frames
 plot_images2(reference_frame_gray, displaced_frame, mean_registered_image)
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"Time taken to run the code: {elapsed_time} seconds")
